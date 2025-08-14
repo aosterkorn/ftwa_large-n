@@ -7,6 +7,7 @@ The purpose is to calculate the non-equilibrium dynamics of the SU(N)-Hubbard-He
 ```math
 \hat H = -t_\mathrm{h} \sum_{\alpha = 1}^N \sum_{\langle i,j \rangle} \Big( c_{i\alpha}^\dagger c_{j\alpha} + \mathrm{H.c.} \Big) - \frac{J}{N} \sum_{\langle i,j\rangle} \Big| \sum_{\alpha = 1}^N c_{i\alpha}^\dagger c_{j\alpha} \Big|^2 + \frac{U}{N} \sum_i \Big( \sum_{\alpha=1}^N c_{i\alpha}^\dagger c_{i\alpha} - \frac{N}{2} \Big)^2
 ```
+within the fermionic truncated Wigner approximation
 
 Different protocols are implemented:
 * Hubbard model interaction quench ($J = 0$): `su_n_fermi_quench.cpp`
@@ -22,7 +23,6 @@ I use the following libraries:
 * `armadillo` (header only), needs (open)blas and lapack
 * `hdf5`
 * `boost_program_options`
-```
 
 I have not (yet) set up more sophisticated build tools, so you might need to adjust your `$CPLUS_INCLUDE_PATH` and `$(LD_)LIBRARY_PATH`.
 Afterwards, just run
