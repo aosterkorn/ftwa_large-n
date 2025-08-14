@@ -5,7 +5,7 @@ It was used in the papers `https://doi.org/10.1103/PhysRevB.106.214318` and `htt
 
 The purpose is to calculate the non-equilibrium dynamics of the SU(N)-Hubbard-Heisenberg Hamiltonian
 ```math
-\hat H = -t_\mathrm{h} \sum_{\alpha = 1}^N \sum_{\langle i,j \rangle} \big( c_{i\alpha}^\dagger c_{j\alpha} + \mathrm{H.c.} \big) - \frac{J}{N} \sum_{\langle i,j\rangle} \big| \sum_{\alpha = 1}^N c_{i\alpha}^\dagger c_{j\alpha} \big|^2 + \frac{U}{N} \sum_i \big( \sum_{\alpha=1}^N c_{i\alpha}^\dagger c_{i\alpha} - \frac{N}{2} \big)^2
+\hat H = -t_\mathrm{h} \sum_{\alpha = 1}^N \sum_{\langle i,j \rangle} \Big( c_{i\alpha}^\dagger c_{j\alpha} + \mathrm{H.c.} \Big) - \frac{J}{N} \sum_{\langle i,j\rangle} \Big| \sum_{\alpha = 1}^N c_{i\alpha}^\dagger c_{j\alpha} \Big|^2 + \frac{U}{N} \sum_i \Big( \sum_{\alpha=1}^N c_{i\alpha}^\dagger c_{i\alpha} - \frac{N}{2} \Big)^2
 ```
 
 Different protocols are implemented:
@@ -16,13 +16,12 @@ Different protocols are implemented:
 A legacy repository containing this code is available at
 `https://gitlab.gwdg.de/stefan-kehrein-condensed-matter-theory/alexander-osterkorn/ftwa_code/`
 
-## compiling
+## Compiling
 
 I use the following libraries:
-```
-armadillo (header only), needs (open)blas and lapack
-hdf5
-boost program options
+* `armadillo` (header only), needs (open)blas and lapack
+* `hdf5`
+* `boost_program_options`
 ```
 
 I have not (yet) set up more sophisticated build tools, so you might need to adjust your `$CPLUS_INCLUDE_PATH` and `$(LD_)LIBRARY_PATH`.
@@ -31,7 +30,17 @@ Afterwards, just run
 make
 ```
 
-## running
+Useful armadillo compile flags:
+* `-DARMA_DONT_USE_WRAPPER`: header only
+* `-DARMA_ALLOW_FAKE_GCC`: e.g. for compiling with Intel MKL
+* `-DARMA_NO_DEBUG`
+
+Additional compile flags for the code:
+* `-DFTWA_WITH_TIMER`: show time measurements of operations
+* `-DFTWA_CACHE_CHECKPOINTS`
+
+
+## Running
 A description of all changeable parameters is obtained upon
 ```
 ./program_name --help
