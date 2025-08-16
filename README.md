@@ -22,7 +22,7 @@ A legacy repository containing this code is available at
 I use the following libraries:
 * `armadillo` (header only), needs (open)blas and lapack
 * `hdf5`
-* `boost_program_options`
+* `odeint` and `boost_program_options` (parts of the `boost` library)
 
 I have not (yet) set up more sophisticated build tools, so you might need to adjust your `$CPLUS_INCLUDE_PATH` and `$(LD_)LIBRARY_PATH`.
 Afterwards, just run
@@ -37,7 +37,7 @@ Useful armadillo compile flags:
 
 Additional compile flags for the code:
 * `-DFTWA_WITH_TIMER`: show time measurements of operations
-* `-DFTWA_CACHE_CHECKPOINTS`
+* `-DFTWA_CACHE_CHECKPOINTS`: save the one-particle reduced density matrix at every time step (usually not recommended)
 
 
 ## Running
