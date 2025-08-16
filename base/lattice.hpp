@@ -3,6 +3,10 @@
 
 #include "basic_defs.hpp"
 
+/**
+ * Class describing size and geometry of a lattice.
+ * It is used to compute the number of sites, unit cells, and the length of the rho vector.
+ */
 class Lattice {
   public:
     Lattice(unsigned int dim, unsigned int L) : _dim(dim), _L(nullptr) {

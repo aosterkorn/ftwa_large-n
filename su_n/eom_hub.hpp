@@ -14,6 +14,12 @@
 
 namespace ftwa_su_n {
 
+/**
+ * Equation of motion for the Hubbard model in 2D with periodic boundary conditions.
+ * system() computes the time derivative of the state vector (to be used with odeint)
+ * observer() computes observables and (if FTWA_CACHE_CHECKPOINTS is defined)
+ * stores the state vector as a checkpoint.
+ */
 class ODEHub2dPBC {
   public:
     ODEHub2dPBC(
@@ -28,8 +34,6 @@ class ODEHub2dPBC {
     ~ODEHub2dPBC();
     
     void system(const arma::cx_vec& x, arma::cx_vec& dxdt, const double t) const;
-    
-    void system2(const arma::cx_vec& x, arma::cx_vec& dxdt, const double t) const;
     
     void observer(const arma::cx_vec& x, const double t);
     

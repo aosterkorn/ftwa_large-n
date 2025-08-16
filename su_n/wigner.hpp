@@ -23,8 +23,21 @@
 
 namespace ftwa_su_n {
 
+/**
+ * From what kind of distribution the initial state should be sampled.
+ * Gaussian corresponds to Gaussian distribution, while
+ * TwoPoint corresponds to a distribution of two delta functions with peaks
+ * at $\mu \pm \sigma$. 
+ */
 enum WignerFuncModel { Gaussian = 1, TwoPoint = 2 };
 
+/**
+ * Gaussian Wigner function for a many-body product state.
+ * It corresponds to a Slater determinant
+ * with the occupied modes listed in @param occupations.
+ * Note that the distributions for the real and imaginary part are
+ * 0.5 of the covariance matrix entries.
+ */
 class WignerFuncProduct {
   public:
     WignerFuncProduct(const Lattice& lattice);
@@ -44,14 +57,6 @@ class WignerFuncProduct {
     WignerFuncModel _wignerFuncModel;
     arma::vec _occupations;
 };
-
-/**
- * Gaussian Wigner function for a many-body product state.
- * It corresponds to a Slater determinant
- * with the occupied modes listed in @param occupations.
- * Note that the distributions for the real and imaginary part are
- * 0.5 of the covariance matrix entries.
- */
 
 /**
  * Gaussian Wigner function for a temperature zero Fermi sea state in 2D.
@@ -95,6 +100,9 @@ class WignerFuncFermiSeaTemp : public WignerFuncProduct {
     double _particleNumberFromChemPot(double chemPot);
 };
 
+/**
+ * Experimental Wigner function class for a BBGKY hierarchy extension of the fTWA method.
+ */
 class HubHieGaussWigner : public WignerFuncFermiSeaGS {
   public:
     HubHieGaussWigner(const Lattice& lattice,
@@ -190,42 +198,6 @@ class HubHeiGaussWignerFiniteNDiagFluct : public HubHeiGaussWignerInfty {
     const unsigned int _n;
     std::mt19937& _generator;
 };
-
-//~ class HubHeiGaussWignerInfty {
-  //~ public:
-    //~ HubHeiGaussWignerInfty(
-        //~ const Lattice& lattice,
-        //~ const HubbardHeisenbergParameters& params,
-        //~ const struct unitCellValues& ucv,
-        //~ const ftwa_su_n::FourierTransformer2dPBC& ft
-    //~ ) : _lattice(lattice), _params(params), _ucv(ucv), _ft(ft) { };
-    
-    //~ virtual void generate(arma::cx_vec& res) const;
-    
-  //~ protected:
-    //~ const Lattice& _lattice;
-    //~ const HubbardHeisenbergParameters& _params;
-    //~ const struct unitCellValues& _ucv;
-    //~ const ftwa_su_n::FourierTransformer2dPBC& _ft;
-//~ };
-
-//~ class HubHeiGaussWignerFiniteN : public HubHeiGaussWignerInfty {
-  //~ public:
-    //~ HubHeiGaussWignerFiniteN(
-        //~ const Lattice& lattice,
-        //~ const HubbardHeisenbergParameters& params,
-        //~ const struct unitCellValues& ucv,
-        //~ const ftwa_su_n::FourierTransformer2dPBC& ft,
-        //~ const unsigned int n,
-        //~ std::mt19937& generator
-    //~ ) : HubHeiGaussWignerInfty(lattice, params, ucv, ft), _n(n), _generator(generator) { };
-    
-    //~ void generate(arma::cx_vec& res) const;
-    
-  //~ private:
-    //~ const unsigned int _n;
-    //~ std::mt19937& _generator;
-//~ };
 
 }
 

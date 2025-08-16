@@ -8,6 +8,11 @@
 #include "basic_defs.hpp"
 #include "lattice.hpp"
 
+/**
+ * Storage class for observables evaluated during the simulation.
+ * update functions are used to update the observables
+ * with the current state vector after each of the TWA runs.
+ */
 class CheckpointManager {
   public:
     CheckpointManager(const Lattice& lattice, const std::string& runName) : write_flag(false), _lattice(lattice), _runName(runName) { }
@@ -109,6 +114,9 @@ class CheckpointManager {
     arma::uvec _n_samples_k_diag_PM;
 };
 
+/**
+ * CheckpointManager implementation for HDF5 output.
+ */
 class HDF5CheckpointManager : public CheckpointManager {
   public:
     HDF5CheckpointManager(const Lattice& lattice, const std::string& runName);

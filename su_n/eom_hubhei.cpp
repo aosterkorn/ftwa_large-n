@@ -26,13 +26,6 @@ ODEHubHei2dPBC::ODEHubHei2dPBC(
 #endif
     _nns = arma::zeros<arma::umat>(V, 4);
     
-    //~ _indices_ai_j = arma::zeros<arma::uvec>(4*rhoLen);
-    //~ _indices_aj_i = arma::zeros<arma::uvec>(4*rhoLen);
-    //~ _rho_conj_ai_j = arma::zeros<arma::vec>(4*rhoLen);
-    //~ _rho_conj_aj_i = arma::zeros<arma::vec>(4*rhoLen);
-    //~ _indices_i = arma::zeros<arma::uvec>(4*rhoLen);
-    //~ _indices_j = arma::zeros<arma::uvec>(4*rhoLen);
-    
     // symmetry breaking for Flux order parameter
     double val = 0.0;
     std::array<double,4> aval = { 0.0, 0.0, 0.0, 0.0 };
@@ -55,29 +48,6 @@ ODEHubHei2dPBC::ODEHubHei2dPBC(
             } else {
                 _symmBreakEps(j, a)   = ((j / L == (2*L-1)) && (neighbors[a] / L == 0)) ? +aval[a] : -aval[a];
             }
-            
-            //~ for (unsigned int i = 0; i <= j; ++i) {
-                //~ index = ftwa_index(i, j);
-                
-                //~ _indices_i(a*rhoLen + index) = a*V + i;
-                //~ _indices_j(a*rhoLen + index) = a*V + j;
-                
-                //~ if (_nns(i, a) > j) {
-                    //~ _indices_ai_j(a*rhoLen + index) = ftwa_index(j, _nns(i, a));
-                    //~ _rho_conj_ai_j(a*rhoLen + index) = -1.0;
-                //~ } else {
-                    //~ _indices_ai_j(a*rhoLen + index) = ftwa_index(_nns(i, a), j);
-                    //~ _rho_conj_ai_j(a*rhoLen + index) = 1.0;
-                //~ }
-                
-                //~ if (_nns(j, a) > i) {
-                    //~ _indices_aj_i(a*rhoLen + index) = ftwa_index(i, _nns(j, a));
-                    //~ _rho_conj_aj_i(a*rhoLen + index) = -1.0;
-                //~ } else {
-                    //~ _indices_aj_i(a*rhoLen + index) = ftwa_index(_nns(j, a), i);
-                    //~ _rho_conj_aj_i(a*rhoLen + index) = 1.0;
-                //~ }
-            //~ }
         }
     }
 #ifdef FTWA_OMIT_U
@@ -307,17 +277,8 @@ void ODEHubHei2dSwitchJPBC::system(const arma::cx_vec& x, arma::cx_vec& dxdt, co
         if (_switch_order >= 0) {
             if ((i / L) % 2 == 0) {
                 pfact(i, 2) += pei_sb * std::complex<double>(0.0, -1.0) * rhoVal(x, i, _nns(i, 2));
-                
-                //~ pfact(i, 0) -= 0.1*pei_sb * std::complex<double>(0.0, -1.0) * rhoVal(x, i, _nns(i, 0));
-                //~ pfact(i, 1) -= 0.1*pei_sb * std::complex<double>(0.0, -1.0) * rhoVal(x, i, _nns(i, 1));
-                //~ pfact(i, 3) -= 0.1*pei_sb * std::complex<double>(0.0, -1.0) * rhoVal(x, i, _nns(i, 3));
             } else {
-                //~ // pfact(i, 0) += (t < Tswitch ? std::exp(-20*(t/Tswitch-0.5)*(t/Tswitch-0.5))*1e-3 : 0.0) * std::complex<double>(0.0, -1.0) * rhoVal(x, i, _nns(i, 0));
                 pfact(i, 0) += pei_sb * std::complex<double>(0.0, -1.0) * rhoVal(x, i, _nns(i, 0));
-                
-                //~ pfact(i, 1) -= 0.1*pei_sb * std::complex<double>(0.0, -1.0) * rhoVal(x, i, _nns(i, 1));
-                //~ pfact(i, 2) -= 0.1*pei_sb * std::complex<double>(0.0, -1.0) * rhoVal(x, i, _nns(i, 2));
-                //~ pfact(i, 3) -= 0.1*pei_sb * std::complex<double>(0.0, -1.0) * rhoVal(x, i, _nns(i, 3));
             }
         }
     }
@@ -565,14 +526,6 @@ void ODEHubHei2dMomPeierlsPBC::system(const arma::cx_vec& k_diag, arma::cx_vec& 
     arma::cx_vec temp = _ft.reshapeDiagABToFlat(dkdt_diag_AB);
     
     dkdt_diag = temp;
-
-    //~ for (unsigned int ky = 0; ky < Ly; ++ky) {
-        //~ for (unsigned int kx = 0; kx < Lx; ++kx) {
-            //~ if (ky > kx) {
-                //~ if (_verbosity >= 100) std::cout << "dkdt (" << kx << ", " << ky << "): " << dkdt_diag_AB(Lx*kx+ky, 1) << std::endl;
-            //~ }
-        //~ }
-    //~ }
     
 #ifdef FTWA_WITH_TIMER
     auto snap1 = sc.now();
@@ -599,12 +552,6 @@ void ODEHubHei2dMomPeierlsPBC::observer(const arma::cx_vec& k, const double t) {
         for (unsigned int kx = 0; kx < ky; ++kx) {
             for (unsigned int i = 0; i < 2; ++i) {
                 k_diag_AB(Lx*kx+ky, i) = k_diag_AB(Lx*ky+kx, i);
-                //~ if (_verbosity >= 100) {
-                    //~ std::cout << "     A A (" << kx << ", " << ky << "): " << k_diag_AB(Lx*ky+kx, 0) << std::endl;
-                    //~ std::cout << "dkdt A A (" << kx << ", " << ky << "): " << dkdt_diag_AB(Lx*ky+kx, 0) << std::endl;
-                    //~ std::cout << "     A B (" << kx << ", " << ky << "): " << k_diag_AB(Lx*ky+kx, 1) << std::endl;
-                    //~ std::cout << "dkdt A B (" << kx << ", " << ky << "): " << dkdt_diag_AB(Lx*ky+kx, 1) << std::endl;
-                //~ }
             }
         }
     }

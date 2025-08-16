@@ -107,17 +107,36 @@ struct PeierlsPulseParameters {
 };
 
 /**
- * Tight-binding energy dispersion
+ * Tight-binding energy dispersion of a square lattice with periodic boundary conditions.
+ * @param L is the length of the lattice in one dimension.
+ * @param mx and @param my are the indices of the momentum (within the interval [0, L-1])
+ * in x and y direction.
  */
 inline double dispTightBinding2d(unsigned int L, unsigned int mx, unsigned int my) {
     // return -2.0*cos((2*M_PI/(double) L) * ((double) mx + 0.5)) - 2.0*cos((2*M_PI/(double) L) * ((double) my + 0.5));
     return -2.0*cos((2*M_PI/(double) L) * ((double) mx)) - 2.0*cos((2*M_PI/(double) L) * ((double) my));
 }
 
+/**
+ * Return true if eps( m1 ) < eps( m2 ), where eps is the energy dispersion
+ * of the tight-binding model on a square lattice with periodic boundary conditions.
+ * @param L is the length of the lattice in one dimension.
+ * @param m1 and @param m2 are the number of the momentum points on the lattice.
+ * 
+ * Note: This function is used to sort the momenta in ascending order of their energy.
+ * 
+ * @see dispTightBinding2d
+ */
 inline bool sortFermi2D(unsigned int L, unsigned int m1, unsigned int m2) {
     return dispTightBinding2d(L, m1 % L, m1 / L) < dispTightBinding2d(L, m2 % L, m2 / L);
 }
 
+/**
+ * Fermi-Dirac distribution function.
+ * @param en is the energy of the state.
+ * @param chem_pot is the chemical potential.
+ * @param temp is the temperature.
+ */
 inline double fermiDirac(double en, double chem_pot, double temp) {
     return 1.0/(1.0 + std::exp((en - chem_pot)/temp));
 }
@@ -132,14 +151,19 @@ inline double dispTightBinding1dLR(unsigned int L, unsigned int mx);
 
 void halfFilling1dLR(const Lattice& lattice, arma::vec& kvals);
 
+////////////////////////////////////////////////////////////////////////
+//////////////////////// useful functions //////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
 /**
+ * Compute the distance R = r_i - r_j of two points on the lattice
+ * in x-direction.
+ * 
  * Ordering of the lattice sites:
  * 0  1  2  3
  * 4  5  6  7
  * 9  9  10 11
  * 12 13 14 15
- * 
- * Computing R = r_i - r_j.
  */
 inline int xdist2dPBC(unsigned int L, unsigned int i, unsigned int j) {
     unsigned int ix = i % L, jx = j % L;
@@ -150,6 +174,16 @@ inline int xdist2dPBC(unsigned int L, unsigned int i, unsigned int j) {
     return d > L-d ? (f ? sL-sd : sd-sL) : (f ? -sd : sd);
 }
 
+/**
+ * Compute the distance R = r_i - r_j of two points on the lattice
+ * in y-direction.
+ * 
+ * Ordering of the lattice sites:
+ * 0  1  2  3
+ * 4  5  6  7
+ * 9  9  10 11
+ * 12 13 14 15
+ */
 inline int ydist2dPBC(unsigned int L, unsigned int i, unsigned int j) {
     unsigned int iy = i / L, jy = j / L;
     bool f = (iy < jy);
@@ -158,12 +192,6 @@ inline int ydist2dPBC(unsigned int L, unsigned int i, unsigned int j) {
     
     return d > L-d ? (f ? sL-sd : sd-sL) : (f ? -sd : sd);
 }
-
-/**
- * 
- * utils
- * 
- **/
 
 inline constexpr unsigned int pow2(unsigned int i) {
     return 1 << i;
@@ -175,11 +203,9 @@ inline int bitAtPos(const T& n, int pos) {
     return bit == 0 ? 0 : +1;
 }
 
-/**
- * 
- * type traits
- * 
- **/
+////////////////////////////////////////////////////////////////////////
+///////////////////////////// type traits //////////////////////////////
+////////////////////////////////////////////////////////////////////////
 
 // number types
 template <typename T>
@@ -215,11 +241,9 @@ struct NumberTypeTrait<std::complex<double>>
     typedef double RealType;
 };
 
-/**
- * 
- * Armadillo-related stuff
- * 
- **/
+////////////////////////////////////////////////////////////////////////
+///////////////////// Armadillo-related stuff //////////////////////////
+////////////////////////////////////////////////////////////////////////
 
 namespace boost { namespace numeric { namespace odeint {
 

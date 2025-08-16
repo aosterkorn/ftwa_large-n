@@ -14,6 +14,12 @@
 
 namespace ftwa_su_n {
 
+/**
+ * Equation of motion for the Hubbard-Heisenberg model in 2D with periodic boundary conditions.
+ * system() computes the time derivative of the state vector (to be used with odeint)
+ * observer() computes observables and (if FTWA_CACHE_CHECKPOINTS is defined) stores the state
+ * vector as a checkpoint.
+ */
 class ODEHubHei2dPBC {
   public:
     ODEHubHei2dPBC(
@@ -60,6 +66,13 @@ class ODEHubHei2dPBC {
     //~ arma::uvec _indices_j;
 };
 
+/**
+ * Equation of motion for the Hubbard-Heisenberg model in 2D with periodic boundary conditions
+ * implementing a temporal switching profile of the parameter $J$.
+ * The switching occurs over a time interval defined by @param switch_time_start
+ * and @param switch_time_end.
+ * @param switch_order defines the smoothness of the switching profile.
+ */
 class ODEHubHei2dSwitchJPBC : public ODEHubHei2dPBC {
   public:
     ODEHubHei2dSwitchJPBC(
@@ -95,6 +108,11 @@ class ODEHubHei2dSwitchJPBC : public ODEHubHei2dPBC {
     double _switch_symm_break_strength;
 };
 
+/**
+ * Equation of motion for the Hubbard-Heisenberg model in 2D with periodic boundary conditions
+ * implementing an electromagnetic pulse via Peierls substitution.
+ * The pulse is defined by the parameters in @param pulseParams.
+ */
 class ODEHubHei2dPeierlsPBC : public ODEHubHei2dPBC {
   public:
     ODEHubHei2dPeierlsPBC(
@@ -121,7 +139,11 @@ class ODEHubHei2dPeierlsPBC : public ODEHubHei2dPBC {
     arma::mat _peierlsExpArgs;
 };
 
-
+/**
+ * Equation of motion for the Hubbard-Heisenberg model in 2D momentum space
+ * with periodic boundary conditions implementing an electromagnetic
+ * field pulse with Peierls subsitution.
+ */
 class ODEHubHei2dMomPeierlsPBC : public ODEHubHei2dPeierlsPBC {
   public:
     ODEHubHei2dMomPeierlsPBC(

@@ -6,38 +6,6 @@ HDF5CheckpointManager::HDF5CheckpointManager(const Lattice& lattice, const std::
 
 HDF5CheckpointManager::~HDF5CheckpointManager() { }
 
-//~ int HDF5CheckpointManager::init(unsigned int num_spins, const SimulationParameters& simParams, bool mom_space, bool with_cov, bool with_abs_offdiag, bool write_to_file) {
-    //~ unsigned int V = _lattice.numSites(), rhoLen = _lattice.rhoLen();
-    //~ unsigned int num_i_t = simParams.num_tsteps + 1;
-    //~ unsigned int num_spin_confs = num_spins*num_spins;
-    
-    //~ arma::cube& rho_dens = mom_space ? this->_rho_dens_k : this->_rho_dens_i;
-    //~ arma::cube& rho_cov_densdens = mom_space ? this->_rho_cov_densdens_kl : this->_rho_cov_densdens_ij;
-    //~ arma::umat& n_samples_dens = mom_space ? this->_n_samples_dens_k : this->_n_samples_dens_i;
-    //~ arma::cx_cube& rho_offdiag = mom_space ? this->_rho_offdiag_kl : this->_rho_offdiag_ij;
-    //~ arma::umat& n_samples_offdiag = mom_space ? this->_n_samples_offdiag_kl : this->_n_samples_offdiag_ij;
-    //~ arma::cube& rho_abs_offdiag = mom_space ? this->_rho_abs_offdiag_kl : this->_rho_abs_offdiag_ij;
-        
-    //~ rho_dens = arma::zeros<arma::cube>(V, num_spins, num_i_t);
-    //~ n_samples_dens = arma::zeros<arma::umat>(num_i_t, num_spins);
-    //~ if (with_cov) {
-        //~ rho_cov_densdens = arma::zeros<arma::cube>(rhoLen, num_spin_confs, num_i_t);
-    //~ }
-    
-    //~ rho_offdiag = arma::zeros<arma::cx_cube>(rhoLen, num_spin_confs, num_i_t);
-    //~ n_samples_offdiag = arma::zeros<arma::umat>(num_i_t, num_spin_confs);
-    //~ if (with_abs_offdiag) {
-        //~ rho_abs_offdiag = arma::zeros<arma::cube>(rhoLen, num_spin_confs, num_i_t);
-    //~ }
-        
-    //~ if (write_to_file) {
-        //~ this->writeDensities(true, mom_space, with_cov);
-        //~ this->writeOffdiag(true, mom_space, with_cov, with_abs_offdiag);
-    //~ }
-    
-    //~ return STATUS_OKAY;
-//~ }
-
 int CheckpointManager::initDensities(unsigned int num_spins, const SimulationParameters& simParams, bool mom_space, bool with_cov_densdens, bool with_cov_densdens_diag, bool write_to_file) {
     unsigned int V = _lattice.numSites(), rhoLen = _lattice.rhoLen();
     unsigned int num_i_t = simParams.num_tsteps + 1;
@@ -478,32 +446,6 @@ int HDF5CheckpointManager::loadDensities(bool mom_space, bool with_cov_densdens,
             rho_cov_densdens_diag.col(spin_conf) = t;
         }
     }
-    //~ for (unsigned int i_t = 0; i_t < num_i_t; ++i_t) {
-        //~ for (unsigned int spin = 0; spin < num_spins; ++spin) {
-            //~ rho_dens.slice(i_t).unsafe_col(spin).load(
-                //~ arma::hdf5_name(filename,
-                //~ rho_dens_table_name + sep + std::to_string((spin+1)*(spin+1)-1)
-                              //~ + sep + std::to_string(i_t)));
-        //~ }
-        
-        //~ if (with_cov_densdens) {
-            //~ for (unsigned int spin_conf = 0; spin_conf < num_spin_confs; ++spin_conf) {
-                //~ rho_cov_densdens.slice(i_t).unsafe_col(spin_conf).load(
-                    //~ arma::hdf5_name(filename,
-                    //~ rho_cov_densdens_table_name + sep + std::to_string(spin_conf)
-                                 //~ + sep + std::to_string(i_t)));
-            //~ }
-        //~ }
-        
-        //~ if (with_cov_densdens_diag) {
-            //~ for (unsigned int spin_conf = 0; spin_conf < num_spin_confs; ++spin_conf) {
-                //~ rho_cov_densdens_diag.slice(i_t).unsafe_col(spin_conf).load(
-                    //~ arma::hdf5_name(filename,
-                    //~ rho_cov_densdens_diag_table_name + sep + std::to_string(spin_conf)
-                                 //~ + sep + std::to_string(i_t)));
-            //~ }
-        //~ }
-    //~ }
     
     return STATUS_OKAY;
 }
@@ -683,21 +625,6 @@ int HDF5CheckpointManager::writeDensities(bool initialize, bool mom_space, bool 
                               + sep + std::string("data"),
                 arma::hdf5_opts::replace));
         }
-        //~ for (unsigned int i_t = 0; i_t < rho_dens.n_slices; ++i_t) {
-            //~ if (initialize) {
-                //~ rho_dens.slice(i_t).unsafe_col(spin).save(
-                    //~ arma::hdf5_name(filename,
-                    //~ rho_dens_table_name + sep + std::to_string((spin+1)*(spin+1)-1)
-                                  //~ + sep + std::to_string(i_t),
-                    //~ arma::hdf5_opts::append));
-            //~ } else {
-                //~ rho_dens.slice(i_t).unsafe_col(spin).save(
-                    //~ arma::hdf5_name(filename,
-                    //~ rho_dens_table_name + sep + std::to_string((spin+1)*(spin+1)-1)
-                                  //~ + sep + std::to_string(i_t),
-                    //~ arma::hdf5_opts::replace));
-            //~ }
-        //~ }
     }
     
     if (with_cov_densdens) {
@@ -711,17 +638,6 @@ int HDF5CheckpointManager::writeDensities(bool initialize, bool mom_space, bool 
                     rho_cov_densdens_table_name + sep + std::to_string(spin_conf) + sep + std::string("data"), arma::hdf5_opts::replace));
             }
         }
-        //~ for (unsigned int i_t = 0; i_t < rho_cov_densdens.n_slices; ++i_t) {
-            //~ for (unsigned int spin_conf = 0; spin_conf < num_spin_confs; ++spin_conf) {
-                //~ if (initialize) {
-                    //~ rho_cov_densdens.slice(i_t).unsafe_col(spin_conf).save(arma::hdf5_name(filename,
-                        //~ rho_cov_densdens_table_name + sep + std::to_string(spin_conf) + sep + std::to_string(i_t), arma::hdf5_opts::append));
-                //~ } else {
-                    //~ rho_cov_densdens.slice(i_t).unsafe_col(spin_conf).save(arma::hdf5_name(filename,
-                        //~ rho_cov_densdens_table_name + sep + std::to_string(spin_conf) + sep + std::to_string(i_t), arma::hdf5_opts::replace));
-                //~ }
-            //~ }
-        //~ }
     }
     
     if (with_cov_densdens_diag) {
@@ -735,17 +651,6 @@ int HDF5CheckpointManager::writeDensities(bool initialize, bool mom_space, bool 
                     rho_cov_densdens_diag_table_name + sep + std::to_string(spin_conf) + sep + std::string("data"), arma::hdf5_opts::replace));
             }
         }
-        //~ for (unsigned int i_t = 0; i_t < rho_cov_densdens_diag.n_slices; ++i_t) {
-            //~ for (unsigned int spin_conf = 0; spin_conf < num_spin_confs; ++spin_conf) {
-                //~ if (initialize) {
-                    //~ rho_cov_densdens_diag.slice(i_t).unsafe_col(spin_conf).save(arma::hdf5_name(filename,
-                        //~ rho_cov_densdens_diag_table_name + sep + std::to_string(spin_conf) + sep + std::to_string(i_t), arma::hdf5_opts::append));
-                //~ } else {
-                    //~ rho_cov_densdens_diag.slice(i_t).unsafe_col(spin_conf).save(arma::hdf5_name(filename,
-                        //~ rho_cov_densdens_diag_table_name + sep + std::to_string(spin_conf) + sep + std::to_string(i_t), arma::hdf5_opts::replace));
-                //~ }
-            //~ }
-        //~ }
     }
     
     return STATUS_OKAY;

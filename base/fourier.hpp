@@ -22,37 +22,25 @@
 namespace ftwa_su_n {
 
 /**
- * Fourier transform of a fTWA rho vector
+ * Fourier transform of a fTWA rho vector in two dimensions with periodic boundary conditions.
  * Momentum entries are labelled according to m = 0, ..., L-1 with k = 2pi/L * m
  */
 class FourierTransformer2dPBC {
   public:
     FourierTransformer2dPBC(const Lattice& lattice);
     
+    /**
+     * Transform a rho vector from position to momentum space.
+     */
     template<typename T>
     void transform(const arma::Col<T>& rho, arma::Col<T>& res) const {
         unsigned int V = _lattice.numCells();
         arma::Mat<T> rhoMat(V, V);
         res.set_size(_lattice.rhoLenCells());
         
-        //~ unsigned int ctr = 0;
-        //~ for (unsigned int j = 0; j < V; ++j) {
-            //~ for (unsigned int i = 0; i <= j; ++i) {
-                //~ rhoMat(i, j) = rho(ctr);
-                //~ ctr++;
-            //~ }
-        //~ }
-        
         rhoMat(_upper_indices) = rho;
         rhoMat = _ftMat * arma::symmatu(rhoMat) * _ftMatConj;
         
-        //~ ctr = 0;
-        //~ for (unsigned int j = 0; j < V; ++j) {
-            //~ for (unsigned int i = 0; i <= j; ++i) {
-                //~ res(ctr) = rhoMat(i, j);
-                //~ ctr++;
-            //~ }
-        //~ }
         res = rhoMat(_upper_indices);
     }
     
@@ -87,29 +75,18 @@ class FourierTransformer2dPBC {
         return res;
     }
     
+    /**
+     * Transform a rho vector from momentum to position space.
+     */
     template<typename T>
     void itransform(const arma::Col<T>& rho, arma::Col<T>& res) const {
         unsigned int V = _lattice.numCells();
         arma::cx_mat rhoMat(V, V);
         res.set_size(_lattice.rhoLenCells());
         
-        //~ unsigned int ctr = 0;
-        //~ for (unsigned int j = 0; j < V; ++j) {
-            //~ for (unsigned int i = 0; i <= j; ++i) {
-                //~ rhoMat(i, j) = rho(ctr);
-                //~ ctr++;
-            //~ }
-        //~ }
         rhoMat(_upper_indices) = rho;
         rhoMat = _ftMatConj * arma::symmatu(rhoMat) * _ftMat;
         
-        //~ ctr = 0;
-        //~ for (unsigned int j = 0; j < V; ++j) {
-            //~ for (unsigned int i = 0; i <= j; ++i) {
-                //~ res(ctr) = rhoMat(i, j);
-                //~ ctr++;
-            //~ }
-        //~ }
         res = rhoMat(_upper_indices);
     }
     
@@ -172,6 +149,9 @@ struct unitCellValues {
     std::complex<double> bonds[4];
 };
 
+/**
+ * Read the "unit cell values" of an equilibrium state from a file.
+ */
 void readUCVFromFile(const std::string& filename, struct unitCellValues& ucv);
 
 arma::cx_vec create_tkmat(const Lattice& lattice,
@@ -179,6 +159,11 @@ arma::cx_vec create_tkmat(const Lattice& lattice,
     const unitCellValues& ucv,
     double Ax, double Ay);
 
+
+/**
+ * Fourier transform for the Hubbard-Heisenberg model on a tilted square lattice (two sites per unit cell).
+ * This class is used to transform the rho vector from position to momentum space and vice versa.
+ */
 class FTSqrt2CellLattice {
   public:   
     FTSqrt2CellLattice(
